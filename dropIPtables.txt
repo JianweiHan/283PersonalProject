@@ -1,0 +1,13 @@
+#drop ip addresses
+sudo iptables -A INPUT -s 172.31.26.123 -j DROP
+sudo iptables -A INPUT -s 172.31.13.18 -j DROP
+sudo iptables -A INPUT -s 172.31.3.93 -j DROP
+sudo iptables -A INPUT -s 172.31.10.34 -j DROP
+sudo iptables -A INPUT -s 172.31.25.76 -j DROP
+
+#add ip addresses back
+sudo iptables -D INPUT -s 172.31.26.123 -j DROP
+sudo iptables -D INPUT -s 172.31.13.18 -j DROP
+sudo iptables -D INPUT -s 172.31.3.93 -j DROP
+sudo iptables -D INPUT -s 172.31.10.34 -j DROP
+sudo iptables -D INPUT -s 172.31.25.76 -j DROP

@@ -5,7 +5,6 @@ import org.codehaus.jettison.json.JSONObject;
 public class Main {
 
     public static void main(String[] args) throws Exception{
-        System.out.println("Hello World!");
 
         MyThread t1 = new MyThread(0,Integer.parseInt(args[0])+0, 5, Integer.parseInt(args[1]));
         MyThread t2 = new MyThread(1,Integer.parseInt(args[0])+1, 5, Integer.parseInt(args[1]));

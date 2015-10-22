@@ -19,8 +19,8 @@ public class MyThread extends Thread {
     public void run() {
         //DB dBlocal=(new MongoClient(new MongoClientURI("mongodb://172.31.31.40:27017"))).getDB("test");
 
-//        DB dB=(new MongoClient(new MongoClientURI("mongodb://172.31.26.123:27017, 172.31.13.18:27017, 172.31.3.93:27017, 172.31.10.34:27017, 172.31.25.76:27017"))).getDB("test");
-//        DBCollection dBCollection = dB.getCollection("test");
+        DB dB=(new MongoClient(new MongoClientURI("mongodb://172.31.26.123:27017, 172.31.13.18:27017, 172.31.3.93:27017, 172.31.10.34:27017, 172.31.25.76:27017"))).getDB("test");
+        DBCollection dBCollection = dB.getCollection("test");
 
         DB dBlocal=(new MongoClient("localhost",27017)).getDB("test");
         DBCollection dBCollectionlocal = dBlocal.getCollection("test");
@@ -34,6 +34,7 @@ public class MyThread extends Thread {
                 Thread.sleep(1000);
                 obj.put("_id", i);
                 obj.put("number", i);
+                obj.put("acknowledged", false);
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -42,20 +43,25 @@ public class MyThread extends Thread {
             // WriteResult result =new WriteResult(0,false,null);
             //System.out.println("writeResult : " + result.wasAcknowledged()+ result.getN()+"  "+ result.toString()) ;
             System.out.println(count);
-            try{
+
+            //write to local mongodb for logging
+            dBCollectionlocal.insert(((DBObject) JSON.parse(obj.toString())));
+            try {
                 //write to mongodb replica
-//                WriteResult result = dBCollection.insert(((DBObject) JSON.parse(obj.toString())));
-//                System.out.println("[ThreadID " + this.threadId+ "] " + i+" count: "+count+"  writeResult : " + result.wasAcknowledged()+ result.getN()+"  "+ result.toString());
+                WriteResult result = dBCollection.insert(((DBObject) JSON.parse(obj.remove("acknowledged").toString())));
 
-                //write to local mongodb for logging
-//                try {
-//                    obj.put("acknowledged", result.wasAcknowledged());
-//                }
-//                catch(Exception e) {
-//                    e.printStackTrace();
-//                }
+                // System.out.println("[ThreadID " + this.threadId+ "] " + i+" count: "+count+"  writeResult : " + result.wasAcknowledged()+ result.getN()+"  "+ result.toString());
 
-                dBCollectionlocal.insert(((DBObject) JSON.parse(obj.toString())));
+
+                //write acknowledged result to local mongodb for logging
+                DBObject query = new BasicDBObject("number", i);
+                DBObject history = new BasicDBObject().append("_id", i)
+                        .append("number", i)
+                        .append("acknowledged", result.wasAcknowledged());
+                DBObject update = new BasicDBObject("$set", history);
+
+                dBCollectionlocal.updateMulti(query, update);
+
 
 
             }

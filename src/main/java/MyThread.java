@@ -30,11 +30,15 @@ public class MyThread extends Thread {
 
             count++;
             JSONObject obj = new JSONObject();
+            JSONObject obj2 = new JSONObject();
             try {
                 Thread.sleep(1000);
                 obj.put("_id", i);
                 obj.put("number", i);
                 obj.put("acknowledged", false);
+
+                obj2.put("_id",i);
+                obj2.put("number",i);
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -48,7 +52,7 @@ public class MyThread extends Thread {
             dBCollectionlocal.insert(((DBObject) JSON.parse(obj.toString())));
             try {
                 //write to mongodb replica
-                WriteResult result = dBCollection.insert(((DBObject) JSON.parse(obj.remove("acknowledged").toString())));
+                WriteResult result = dBCollection.insert(((DBObject) JSON.parse(obj2.toString())));
 
                 // System.out.println("[ThreadID " + this.threadId+ "] " + i+" count: "+count+"  writeResult : " + result.wasAcknowledged()+ result.getN()+"  "+ result.toString());
 
